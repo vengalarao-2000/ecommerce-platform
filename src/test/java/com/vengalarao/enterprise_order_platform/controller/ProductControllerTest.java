@@ -362,6 +362,16 @@ public class ProductControllerTest {
 
     }
 
+    
+    /* *** IMP MOCKITO RULE ***
+    Non-void method:
+    when(...).thenReturn(...)
+    when(...).thenThrow(...)
+
+    Void method:
+    doNothing().when(...)
+    doThrow(...).when(...) */
+
     @Test 
     void deleteProduct_notFound_returnsNotFound() throws Exception {
         doThrow(
@@ -378,13 +388,5 @@ public class ProductControllerTest {
 
     }
 
-    /* *** IMP MOCKITO RULE ***
-    Non-void method:
-    when(...).thenReturn(...)
-    when(...).thenThrow(...)
-
-    Void method:
-    doNothing().when(...)
-    doThrow(...).when(...) */
 
 }
