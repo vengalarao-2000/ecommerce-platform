@@ -111,7 +111,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiErrorResponse> handleConstraintViolation(
             ConstraintViolationException exception,
             HttpServletRequest request) {
-
+        //As there might be multiple constraint validation violated, using streams to pick the first one.
         String message = exception.getConstraintViolations()
                 .stream()
                 .map(ConstraintViolation::getMessage)

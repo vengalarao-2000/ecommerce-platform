@@ -1,12 +1,15 @@
 package com.vengalarao.enterprise_order_platform.entity;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -35,6 +38,9 @@ public class Product {
 
     @Column(nullable = false)
     private Boolean active = true;
+
+    @OneToMany (mappedBy = "product")
+    private List<OrderItem> orderItems = new ArrayList<>();
 
     public Product() {
 
@@ -96,5 +102,15 @@ public class Product {
     public void setActive(Boolean active) {
         this.active = active;
     }
+
+    public List<OrderItem> getOrderItems() {
+        return orderItems;
+    }
+
+    public void setOrderItems(List<OrderItem> orderItems) {
+        this.orderItems = orderItems;
+    }
+
+    
 
 }
