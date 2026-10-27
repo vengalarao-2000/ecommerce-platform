@@ -17,7 +17,11 @@ import com.vengalarao.enterprise_order_platform.entity.Customer;
 import com.vengalarao.enterprise_order_platform.entity.Order;
 import com.vengalarao.enterprise_order_platform.entity.OrderItem;
 import com.vengalarao.enterprise_order_platform.entity.Product;
+import com.vengalarao.enterprise_order_platform.exception.CustomerInactiveException;
 import com.vengalarao.enterprise_order_platform.exception.CustomerNotFoundException;
+import com.vengalarao.enterprise_order_platform.exception.InsufficientStockException;
+import com.vengalarao.enterprise_order_platform.exception.OrderNotFoundException;
+import com.vengalarao.enterprise_order_platform.exception.ProductInactiveException;
 import com.vengalarao.enterprise_order_platform.exception.ProductNotFoundException;
 import com.vengalarao.enterprise_order_platform.repository.CustomerRepository;
 import com.vengalarao.enterprise_order_platform.repository.OrderItemRepository;
@@ -56,7 +60,7 @@ public class OrderService {
         //Since active is of type Boolean there might be chances of this field being null to avoid NullPointerException it is safe to use the below instead of !customer.getActive()
         if(!Boolean.TRUE.equals(customer.getActive())) {
             //Later on will create a custom exception like CustomerInactiveException and return 409 CONFLICT as customer exists but their current state does not allow the requested operation.
-            throw new IllegalStateException("Customer with id '" + customer.getId() + "' is inactive.");
+            throw new CustomerInactiveException("Customer with id '" + customer.getId() + "' is inactive.");
         }
 
         
@@ -81,12 +85,12 @@ public class OrderService {
             if(!Boolean.TRUE.equals(product.getActive())) {
                 //False and null triggers this block
                 //IllegalStateException as we have data in DB but not in a valid state
-                throw new IllegalStateException("Product with id " + product.getId() + " is inactive");
+                throw new ProductInactiveException("Product with id " + product.getId() + " is inactive");
             }
 
             //check if avbl stock quanity > requested quantity
             if(quantity > product.getStockQuantity()) {
-                throw new IllegalStateException("Insufficient stock for product: " + product.getName());
+                throw new InsufficientStockException("Insufficient stock for product: " + product.getName());
             }
 
             //Once all validations pass, create the OrderItem
@@ -133,6 +137,11 @@ public class OrderService {
 
         return mapToResponse(savedOrder, savedOrderItems);
                     
+    }
+
+    public OrderResponse getOrderById(Long id) {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order with id " + id + " is not found"));
+        return mapToResponse(order, order.getOrderItems());
     }
 
     private OrderResponse mapToResponse(Order savedOrder, List<OrderItem> savedOrderItems) {

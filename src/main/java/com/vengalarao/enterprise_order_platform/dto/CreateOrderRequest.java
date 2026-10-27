@@ -6,6 +6,20 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
+/* JSON Request:
+{
+    "customerId": 1,
+    "items": [    
+        {
+            "productId": 2,
+            "quantity": 5
+        },
+        {
+            "productId": 10,
+            "quantity": 15
+        }
+    ]
+} */
 public class CreateOrderRequest {
 
     @NotNull (message = "Customer id is required")
