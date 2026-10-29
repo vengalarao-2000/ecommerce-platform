@@ -28,7 +28,7 @@ import com.vengalarao.enterprise_order_platform.repository.OrderItemRepository;
 import com.vengalarao.enterprise_order_platform.repository.OrderRepository;
 import com.vengalarao.enterprise_order_platform.repository.ProductRepository;
 
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service 
 public class OrderService {
@@ -139,9 +139,19 @@ public class OrderService {
                     
     }
 
+    @Transactional(readOnly = true)
     public OrderResponse getOrderById(Long id) {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new OrderNotFoundException("Order with id " + id + " is not found"));
+        Order order = orderRepository.findByIdWithDetails(id).orElseThrow(() -> new OrderNotFoundException("Order with id " + id + " is not found"));
         return mapToResponse(order, order.getOrderItems());
+    }
+
+    @Transactional(readOnly = true)
+    public List<OrderResponse> getAllOrders() {
+        List<Order> orders = orderRepository.findAllWithDetails();
+        //Map each Order into OrderResponse before returning.
+        return orders.stream()
+                    .map(order -> mapToResponse(order, order.getOrderItems()))
+                    .toList();
     }
 
     private OrderResponse mapToResponse(Order savedOrder, List<OrderItem> savedOrderItems) {
